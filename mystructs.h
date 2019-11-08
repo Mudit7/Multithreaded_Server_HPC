@@ -5,29 +5,29 @@ struct clientIdentity
 	int acceptId;    // socketDescriptor
 	string ip;
 	int portNo;
-	string requestTime;
+	//string requestTime;
 };
 
 
-struct clientInfo
-{
-	string r_method;
-	string r_type;
-	string r_version;
-	string r_firstline;
-	string r_filename;
-	string r_time;
-	string r_servetime;
-	int r_acceptid;
-	string r_ip;
-	u_int16_t r_portno;
-	int r_filesize;
-	bool status_file;
-	string r_ctype;
-	bool rootcheck;
-	int status_code;
+// struct clientInfo
+// {
+// 	string r_method;
+// 	string r_type;
+// 	string r_version;
+// 	string r_firstline;
+// 	string r_filename;
+// 	string r_time;
+// 	string r_servetime;
+// 	int r_acceptid;
+// 	string r_ip;
+// 	u_int16_t r_portno;
+// 	int r_filesize;
+// 	bool status_file;
+// 	string r_ctype;
+// 	bool rootcheck;
+// 	int status_code;
 
-};
+// };
 
 typedef struct Job
 {
@@ -51,3 +51,6 @@ typedef struct PoolData {
 	int shutdown;
 	int dont_accept;
 } PoolData;
+
+typedef struct sockaddr_in sockin_t;		//just a short name
+typedef struct sockaddr sock_t;
