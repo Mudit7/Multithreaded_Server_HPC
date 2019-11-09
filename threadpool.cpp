@@ -3,11 +3,12 @@
 
 
 JobQueueData jobq;
-
+PoolData pool;
 void create_threadpool(int n)
 {
 
     jobq.qsize=0;
+    pool.num_threads=n;
     
     pthread_mutex_init(&jobq.qlock,NULL);
     pthread_cond_init(&jobq.q_Empty,NULL);
@@ -17,6 +18,7 @@ void create_threadpool(int n)
     for(int i=0;i<n;i++)
     {
         pthread_t p;
+        pool.threads[i]=p;
         void *buf;
         //create threads
         pthread_create(&p,NULL,handler,(void*)buf);

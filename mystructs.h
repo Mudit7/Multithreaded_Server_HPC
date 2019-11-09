@@ -2,7 +2,7 @@
 
 struct clientIdentity
 {
-	int acceptId;    // socketDescriptor
+	int sockId;    // socketDescriptor
 	string ip;
 	int portNo;
 	//string requestTime;
