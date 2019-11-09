@@ -11,7 +11,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+#include<bits/stdc++.h>
 
 
 using namespace std;
@@ -25,4 +25,8 @@ using namespace std;
 //function prototypes
 void create_threadpool(int n);
 void *handler(void *buf);
-
+void parseRequest(struct clientIdentity clientData);
+typedef void (* dispatch_fn)(void*);
+void create_threadpool(int n);
+void dispatch(dispatch_fn dispatch_to_here,void* arg);
+//void destroy_threadpool(threadpool destroyme);

@@ -1,9 +1,8 @@
 #include "includes.h"
 #include "mystructs.h"
 
-
-JobQueueData jobq;
-PoolData pool;
+struct JobQueueData jobq;
+struct PoolData pool;
 void create_threadpool(int n)
 {
 
@@ -14,7 +13,7 @@ void create_threadpool(int n)
     pthread_cond_init(&jobq.q_Empty,NULL);
     pthread_cond_init(&jobq.q_NonEmpty,NULL);
 
-
+	pool.threads = (pthread_t*) malloc (sizeof(pthread_t)*n);
     for(int i=0;i<n;i++)
     {
         pthread_t p;
@@ -27,6 +26,50 @@ void create_threadpool(int n)
     
 
 }
+
+
+//****************************************************************************************************
+
+void dispatch(dispatch_fn dispatch_to_here,void* arg)
+{
+	
+
+	//struct Job *work = (struct Job *)malloc(sizeof(struct Job));
+	//make a work queue element.  
+	struct Job work;	
+	//if(work == NULL) {
+		//fprintf(stderr, "Out of memory creating a work struct!\n");
+		//return;
+	//}
+
+	
+	work.service = dispatch_to_here;
+	work.arg = arg;
+
+	pthread_mutex_lock(&jobq.qlock);
+
+	// it will helpful when the destroy function is already called and Just incase someone is trying to queue more function
+	if(pool.dont_accept) { 
+		//free(work); 
+		return;
+	}
+
+	if(jobq.q.empty()) 
+	{
+		pthread_cond_signal(&jobq.q_NonEmpty); 
+	}
+	else 
+	{
+		jobq.q.push(work);
+		//pthread_cond_signal(&(pool->q_NonEmpty));
+	}
+
+	jobq.qsize++;	
+	pthread_mutex_unlock(&jobq.qlock);  //unlock the queue.
+
+}
+//****************************************************************************************************
+
 
 void *handler(void *buf)
 {

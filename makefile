@@ -8,6 +8,5 @@ main.o: main.cpp
 	
 threadpool.o: threadpool.cpp 
 	g++ -c threadpool.cpp
-
 clean:
 	rm *.o

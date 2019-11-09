@@ -1,6 +1,33 @@
 #include "includes.h"
-#include "mystructs.h"
+//#include "mystructs.h"
+#include "threadpool.h"
+#include"parse.h"
 
+//PoolData pool;
+
+//If below functions reqd then move to headers otherwise discard
+//Return Port #
+u_int16_t get_port_number(struct sockaddr *s)
+{
+    return (((struct sockaddr_in  *)s)->sin_port);
+}
+
+//Return Ip address
+void * get_ip_address(sockaddr *s)
+{
+    return &((sockaddr_in *)s)->sin_addr;
+}
+
+void dispatch_to_here(void *arg)
+{
+	struct clientIdentity *tempClientData = (struct clientIdentity*)arg ; 
+    struct clientIdentity clientData;  
+    clientData.sockId = tempClientData->sockId ; 
+    clientData.ip = tempClientData->ip ; 
+    //clientData.portNo 
+    //Parse *p=new Parse();
+    parseRequest(clientData);
+}
 
 
 int main(int argc,char* argv[])
@@ -35,16 +62,26 @@ int main(int argc,char* argv[])
     while(true)
     {
         int newsockfd=-1;
-        if((newsockfd = accept(sock,(struct sockaddr*)&serv_addr,(socklen_t *)&addrlen)) == -1)
+        struct sockaddr_in client_addr;
+        char IP[INET6_ADDRSTRLEN];
+        int clientAddLen;
+        if((newsockfd = accept(sock,(struct sockaddr*)&client_addr,(socklen_t *)&clientAddLen)) == -1)
             perror("Accept:");
-
+            
+		inet_ntop(client_addr.sin_family,get_ip_address((struct sockaddr *)&client_addr),IP, sizeof(IP));
 
         //form client request object and dispatch!
-        
+        struct clientIdentity *clientData = (struct clientIdentity *)malloc(sizeof(struct clientIdentity));
+		clientData->sockId = newsockfd;
+		string str(IP);
+		clientData->ip = str;
+		//clientData->portNo
+
+		dispatch(dispatch_to_here, (void *) &clientData);
 
     }
 
-
+	
     return 0;
 }
 
