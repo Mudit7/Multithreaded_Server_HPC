@@ -1,6 +1,6 @@
 #include "includes.h"
-//#include "mystructs.h"
-#include "threadpool.h"
+// #include "mystructs.h"
+// #include "threadpool.h"
 #include"parse.h"
 
 //PoolData pool;
@@ -36,7 +36,9 @@ int main(int argc,char* argv[])
     create_threadpool(NO_OF_THREADS);
     
     //listen,accept
+
     int port=5000;
+   
     int sock=-1;
     sockin_t serv_addr;
     pthread_t thread_id;
@@ -58,9 +60,10 @@ int main(int argc,char* argv[])
     }  
     int status=listen(sock,20);
 
-
+   
     while(true)
     {
+        
         int newsockfd=-1;
         struct sockaddr_in client_addr;
         char IP[INET6_ADDRSTRLEN];
@@ -74,10 +77,11 @@ int main(int argc,char* argv[])
         struct clientIdentity *clientData = (struct clientIdentity *)malloc(sizeof(struct clientIdentity));
 		clientData->sockId = newsockfd;
 		string str(IP);
-		clientData->ip = str;
+		clientData->ip = "sdgsg";
+        clientData->portNo=1234;
 		//clientData->portNo
 
-		dispatch(dispatch_to_here, (void *) &clientData);
+		dispatch(dispatch_to_here, (void *) clientData);
 
     }
 

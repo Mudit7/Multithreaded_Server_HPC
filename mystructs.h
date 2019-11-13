@@ -9,7 +9,7 @@ struct clientIdentity
 };
 
 
- struct clientInfo
+typedef struct clientInfo
  {
 // 	string r_method;
  	string r_type;
@@ -27,7 +27,7 @@ struct clientIdentity
 // 	bool rootcheck;
 // 	int status_code;
 
- };
+ }clientInfo;
 
 struct Job
 {

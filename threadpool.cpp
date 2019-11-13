@@ -54,17 +54,21 @@ void dispatch(dispatch_fn dispatch_to_here,void* arg)
 		return;
 	}
 
-	if(jobq.q.empty()) 
+	
+    
+    //pthread_cond_signal(&(pool->q_NonEmpty));
+   
+	
+    if(jobq.q.empty()) 
 	{
+        jobq.q.push(work);
 		pthread_cond_signal(&jobq.q_NonEmpty); 
 	}
-	else 
-	{
-		jobq.q.push(work);
-		//pthread_cond_signal(&(pool->q_NonEmpty));
-	}
-
+    else{
+        jobq.q.push(work);
+    }
 	jobq.qsize++;	
+    
 	pthread_mutex_unlock(&jobq.qlock);  //unlock the queue.
 
 }
@@ -78,20 +82,23 @@ void *handler(void *buf)
     
     */
    while(1) {	
+       
 		pthread_mutex_lock(&(jobq.qlock)); 
+     
         if(jobq.q.empty())
         {
             //wait on condition variable
+          
             pthread_cond_wait(&jobq.q_NonEmpty,&(jobq.qlock));
         }
         Job job=jobq.q.front();
         jobq.q.pop();
 
-         
 
         pthread_mutex_unlock(&(jobq.qlock));
         //function call
         (job.service)(job.arg);
+        
 
    }
 
