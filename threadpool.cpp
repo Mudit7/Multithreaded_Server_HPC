@@ -1,5 +1,4 @@
 #include "includes.h"
-#include "mystructs.h"
 
 struct JobQueueData jobq;
 struct PoolData pool;
@@ -23,16 +22,13 @@ void create_threadpool(int n)
         pthread_create(&p,NULL,handler,(void*)buf);
 
     }
-    
 
 }
-
 
 //****************************************************************************************************
 
 void dispatch(dispatch_fn dispatch_to_here,void* arg)
 {
-	
 
 	//struct Job *work = (struct Job *)malloc(sizeof(struct Job));
 	//make a work queue element.  
@@ -48,16 +44,6 @@ void dispatch(dispatch_fn dispatch_to_here,void* arg)
 
 	pthread_mutex_lock(&jobq.qlock);
 
-	// it will helpful when the destroy function is already called and Just incase someone is trying to queue more function
-	if(pool.dont_accept) { 
-		//free(work); 
-		return;
-	}
-
-	
-    
-    //pthread_cond_signal(&(pool->q_NonEmpty));
-   
 	
     if(jobq.q.empty()) 
 	{
@@ -94,13 +80,8 @@ void *handler(void *buf)
         Job job=jobq.q.front();
         jobq.q.pop();
 
-
         pthread_mutex_unlock(&(jobq.qlock));
         //function call
         (job.service)(job.arg);
-        
-
    }
-
-
 }

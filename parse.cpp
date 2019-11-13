@@ -1,4 +1,5 @@
-#include "mystructs.h"
+#include "includes.h"
+
 bool fileExists(char *filename)
 {
 	struct stat check;
@@ -31,7 +32,7 @@ void sendFile(char *filename, int fsize, int sockfd)
 	fclose(fp);
 }
 
-void parseRequest(struct clientIdentity clientData)
+void parseRequest(clientIdentity clientData)
 {
 	int recvbytes = 0;
 	char buffer[4096];
@@ -41,7 +42,7 @@ void parseRequest(struct clientIdentity clientData)
 
 	if ((recvbytes = (recv(clientData.sockId, buffer, sizeof(buffer), 0))) == -1)
 		perror("Receive:");
-	cout << recvbytes << buffer << "\n";
+	//cout << recvbytes << buffer << "\n";
 	buffer[recvbytes] = '\0';
 
 	char *chars_array = strtok(buffer, "#");

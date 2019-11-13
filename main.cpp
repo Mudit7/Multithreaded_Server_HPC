@@ -1,7 +1,6 @@
 #include "includes.h"
-// #include "mystructs.h"
+
 // #include "threadpool.h"
-#include"parse.h"
 
 //PoolData pool;
 
@@ -20,8 +19,8 @@ void * get_ip_address(sockaddr *s)
 
 void dispatch_to_here(void *arg)
 {
-	struct clientIdentity *tempClientData = (struct clientIdentity*)arg ; 
-    struct clientIdentity clientData;  
+	clientIdentity *tempClientData = (clientIdentity*)arg ; 
+    clientIdentity clientData;  
     clientData.sockId = tempClientData->sockId ; 
     clientData.ip = tempClientData->ip ; 
     //clientData.portNo 
