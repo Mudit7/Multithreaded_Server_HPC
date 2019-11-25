@@ -42,7 +42,7 @@ void parseRequest(clientIdentity clientData)
 
 	if ((recvbytes = (recv(clientData.sockId, buffer, sizeof(buffer), 0))) == -1)
 		perror("Receive:");
-	//cout << recvbytes << buffer << "\n";
+	cout <<"Recieved: "<<buffer << "\n";
 	buffer[recvbytes] = '\0';
 
 	char *chars_array = strtok(buffer, "#");

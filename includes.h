@@ -19,12 +19,14 @@ using namespace std;
 
 
 //macros
-#define NO_OF_THREADS 20
-
+#define NO_OF_THREADS 3
+#define FACTOR 2
 
 //function prototypes
 void create_threadpool(int n);
 void *handler(void *buf);
+void *more_threads_alloc(void *);
+
 void parseRequest(struct clientIdentity clientData);
 typedef void (* dispatch_fn)(void*);
 void create_threadpool(int n);
@@ -34,7 +36,7 @@ int getFileSize(char *filename);
 void sendFile(char *filename, int fsize, int sockfd);
 void parseRequest(clientIdentity clientData);
 
-//void destroy_threadpool(threadpool destroyme);
+void destroy_threadpool(int option);
 
 
 // structs/classes
@@ -65,15 +67,16 @@ struct JobQueueData {
 	pthread_mutex_t qlock;		//lock on the queue
 	int qsize;			//size of queue
 	queue<Job> q;	
+	
 };
 
 struct PoolData {
 
 	int num_threads;	//no. of threads
 	pthread_t *threads;	//pointer to threads
+	bool destroy;
+	//pthread_mutex_t plock;
 	
-	int shutdown;
-	int dont_accept;
 };
 
 typedef struct sockaddr_in sockin_t;		//just a short name

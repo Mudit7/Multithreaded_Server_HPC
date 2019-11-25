@@ -17,6 +17,25 @@ void * get_ip_address(sockaddr *s)
     return &((sockaddr_in *)s)->sin_addr;
 }
 
+void * get_that_input (void *){
+    string input;
+    while (true){
+         printf("Enter Command : ");
+         getline(cin,input);
+         if(input=="destroy"){
+             destroy_threadpool(1);
+         }
+         else if(input=="destroy -f")
+         {
+             destroy_threadpool(2);
+         }
+         else if(input == "create")
+         {
+             create_threadpool(20); //create a new pool(to be used after destruction pls..)
+         }
+    }
+}
+
 void dispatch_to_here(void *arg)
 {
 	clientIdentity *tempClientData = (clientIdentity*)arg ; 
@@ -32,8 +51,20 @@ void dispatch_to_here(void *arg)
 int main(int argc,char* argv[])
 {
 
+    pthread_t pool_d_id;
+
+    if (pthread_create(&pool_d_id, NULL, get_that_input, (void *)NULL) < 0)
+    {
+        perror("\ncould not create thread for input\n");
+    }
+    if (pthread_create(&pool_d_id, NULL, more_threads_alloc, (void *)NULL) < 0)
+    {
+        perror("\ncould not create thread for input\n");
+    }
+
     create_threadpool(NO_OF_THREADS);
     
+
     //listen,accept
 
     int port=5000;
@@ -53,11 +84,12 @@ int main(int argc,char* argv[])
     serv_addr.sin_addr.s_addr=inet_addr("127.0.0.1");
     int addrlen=sizeof(serv_addr);
 
-    if(bind(sock,(sock_t*)&serv_addr,sizeof(sock_t)) <0){
-        cout<<"socket creation failed,try again\n";
-        return 0;
-    }  
-    int status=listen(sock,20);
+    // if(bind(sock,(sock_t*)&serv_addr,sizeof(sock_t)) <0){
+    //     cout<<"socket creation failed,try again\n";
+    //     return 0;
+    // }  
+    bind(sock,(sock_t*)&serv_addr,sizeof(sock_t));
+    int status=listen(sock,100);
 
    
     while(true)

@@ -20,9 +20,35 @@ void create_threadpool(int n)
         void *buf;
         //create threads
         pthread_create(&p,NULL,handler,(void*)buf);
-
     }
+    pool.destroy=0;
+}
 
+void destroy_threadpool(int option)
+{
+    if(pool.destroy==1)
+    {
+        cout<<"Already Destroyed\n";
+        return;
+    }
+    cout<<"About to destroy the Pool\nUse \"create\" command to create a new pool\n";
+    pthread_mutex_lock(&(jobq.qlock));
+    if(option==1)
+    {
+        //wait till job queue is empty
+        if(!jobq.q.empty())
+        {
+            //wait on condition variable
+
+            pthread_cond_wait(&jobq.q_Empty,&(jobq.qlock));
+
+        }
+    }
+    pool.destroy=1;
+    delete pool.threads;
+    pool.num_threads=0;
+    pool.threads=NULL;
+    cout<<"Destroyed successfully\n";
 }
 
 //****************************************************************************************************
@@ -69,6 +95,14 @@ void *handler(void *buf)
     */
    while(1) {	
        
+        //if thread is to be destroyed
+        if(pool.destroy)
+        {
+            pthread_exit(0);
+            return NULL;
+        }
+
+
 		pthread_mutex_lock(&(jobq.qlock)); 
      
         if(jobq.q.empty())
@@ -77,6 +111,8 @@ void *handler(void *buf)
           
             pthread_cond_wait(&jobq.q_NonEmpty,&(jobq.qlock));
         }
+        //wait if threadpool is being destroyed
+
         Job job=jobq.q.front();
         jobq.q.pop();
 
@@ -84,4 +120,32 @@ void *handler(void *buf)
         //function call
         (job.service)(job.arg);
    }
+}
+
+void *more_threads_alloc(void *)
+{
+    //check if qsize > num_threads*factor,then reallocate the pool threads
+    while(1)
+    {
+        //check if more threads are required
+        if(jobq.qsize> pool.num_threads*FACTOR)
+        {
+            cout<<"Adding more threads to the pool\n";
+            int oldt=pool.num_threads;
+            int newt=pool.num_threads*FACTOR;
+            pool.threads = (pthread_t*) realloc (pool.threads,sizeof(pthread_t)*newt);
+            //now create new threads
+            for(int i=oldt;i<newt;i++)
+            {
+                pthread_t p;
+                pool.threads[i]=p;
+                void *buf;
+                //create threads
+                pthread_create(&p,NULL,handler,(void*)buf);
+                
+            }
+        }
+        sleep(2); //check periodically in every 2 sec
+    }
+    
 }
