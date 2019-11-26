@@ -1,11 +1,12 @@
 #include "includes.h"
-
+std::chrono::time_point<std::chrono::system_clock> stop,start;
+ 
 struct JobQueueData jobq;
 struct PoolData pool;
 void create_threadpool(int n)
 {
 
-    jobq.qsize=0;
+    //jobq.qsize=0;
     pool.num_threads=n;
     
     pthread_mutex_init(&jobq.qlock,NULL);
@@ -79,7 +80,7 @@ void dispatch(dispatch_fn dispatch_to_here,void* arg)
     else{
         jobq.q.push(work);
     }
-	jobq.qsize++;	
+	//jobq.qsize++;	
     
 	pthread_mutex_unlock(&jobq.qlock);  //unlock the queue.
 
@@ -115,10 +116,17 @@ void *handler(void *buf)
 
         Job job=jobq.q.front();
         jobq.q.pop();
-
+		
         pthread_mutex_unlock(&(jobq.qlock));
         //function call
         (job.service)(job.arg);
+		stop = high_resolution_clock::now();
+		auto duration = duration_cast<microseconds>(stop - start);
+		cout << duration.count()<<endl;
+		//fstream new_file;
+		//new_file.open("newfile.txt", ios::out);	
+		//cout << stop;
+		//new_file.close();
    }
 }
 
@@ -128,11 +136,14 @@ void *more_threads_alloc(void *)
     while(1)
     {
         //check if more threads are required
-        if(jobq.qsize> pool.num_threads*FACTOR)
+        if(jobq.q.size()> pool.num_threads*FACTOR)
         {
             cout<<"Adding more threads to the pool\n";
             int oldt=pool.num_threads;
             int newt=pool.num_threads*FACTOR;
+			cout<< "Old count"<< oldt<<endl;
+			cout<< "New count"<< newt<<endl;
+			pool.num_threads=pool.num_threads*FACTOR;
             pool.threads = (pthread_t*) realloc (pool.threads,sizeof(pthread_t)*newt);
             //now create new threads
             for(int i=oldt;i<newt;i++)
@@ -145,7 +156,7 @@ void *more_threads_alloc(void *)
                 
             }
         }
-        sleep(2); //check periodically in every 2 sec
+        sleep(0.5); //check periodically in every 2 sec
     }
     
 }

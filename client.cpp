@@ -1,11 +1,14 @@
 #include "includes.h"
 
-int main()
+int main(int argc,char *argv[])
 {
+	int serverport=5000;
+	if(argc>2)
+		serverport=atoi(argv[2]);
     vector<string> tok;
-    string protocol;
-    cout << "Enter Request#filename::";
-    getline(cin, protocol);
+    string protocol(argv[1]);
+    //cout << "Enter Request#filename::";
+    //getline(cin, protocol);
     stringstream tokenizer(protocol);
     string temp;
     while (getline(tokenizer, temp, '#'))
@@ -18,7 +21,7 @@ int main()
     // specifying address for the socket
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(5000);
+    serv_addr.sin_port = htons(serverport);
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     //setting connection
     int connection_status = connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
@@ -28,7 +31,7 @@ int main()
     send(client_socket, protocol.c_str(), sizeof(protocol), 0);
     int file_size = 0;
     recv(client_socket, &file_size, sizeof(file_size), 0);
-    tok[1] = "/home/divyani/Downloads/" + tok[1];
+    tok[1] = "/home/lenovo/Downloads/" + tok[1];
     //cout<<tok[1]<<endl;
     FILE *fp = fopen(tok[1].c_str(), "a+");
     char buffer[4096];

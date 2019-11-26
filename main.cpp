@@ -1,5 +1,5 @@
 #include "includes.h"
-
+extern std::chrono::time_point<std::chrono::system_clock> start;
 // #include "threadpool.h"
 
 //PoolData pool;
@@ -51,6 +51,9 @@ void dispatch_to_here(void *arg)
 int main(int argc,char* argv[])
 {
 
+	int serverport=5000;
+	if(argc>1)
+		serverport=atoi(argv[1]);
     pthread_t pool_d_id;
 
     if (pthread_create(&pool_d_id, NULL, get_that_input, (void *)NULL) < 0)
@@ -67,7 +70,7 @@ int main(int argc,char* argv[])
 
     //listen,accept
 
-    int port=5000;
+    int port=serverport;
    
     int sock=-1;
     sockin_t serv_addr;
@@ -90,8 +93,8 @@ int main(int argc,char* argv[])
     // }  
     bind(sock,(sock_t*)&serv_addr,sizeof(sock_t));
     int status=listen(sock,100);
-
-   
+	bool flag=true;
+   	 
     while(true)
     {
         
@@ -111,9 +114,13 @@ int main(int argc,char* argv[])
 		clientData->ip = "sdgsg";
         clientData->portNo=1234;
 		//clientData->portNo
-
-		dispatch(dispatch_to_here, (void *) clientData);
-
+	if(flag)	
+	{
+		start = high_resolution_clock::now(); 
+		flag=false;
+	}
+	dispatch(dispatch_to_here, (void *) clientData);
+	
     }
 
 	
