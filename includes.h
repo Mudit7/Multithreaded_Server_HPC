@@ -21,7 +21,7 @@ using namespace std::chrono;
 
 //macros
 #define NO_OF_THREADS 3
-#define FACTOR 5
+#define FACTOR 2
 
 //function prototypes
 void create_threadpool(int n);

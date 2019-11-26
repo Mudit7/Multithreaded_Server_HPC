@@ -141,6 +141,8 @@ void *more_threads_alloc(void *)
             cout<<"Adding more threads to the pool\n";
             int oldt=pool.num_threads;
             int newt=pool.num_threads*FACTOR;
+			//system bottleneck
+			if(newt>100) return NULL;
 			cout<< "Old count"<< oldt<<endl;
 			cout<< "New count"<< newt<<endl;
 			pool.num_threads=pool.num_threads*FACTOR;
@@ -152,7 +154,7 @@ void *more_threads_alloc(void *)
                 pool.threads[i]=p;
                 void *buf;
                 //create threads
-                pthread_create(&p,NULL,handler,(void*)buf);
+                pthread_create(&pool.threads[i],NULL,handler,(void*)buf);
                 
             }
         }
